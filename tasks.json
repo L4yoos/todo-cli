@@ -1,0 +1,27 @@
+[
+ {
+  "taskId": "c7a9c084-181b-4bdb-9135-69b4e180be7e",
+  "name": "name",
+  "type": "DAILY",
+  "status": "PLANNED",
+  "createdAt": "2026-05-21T12:17:28.143508",
+  "updatedAt": "2026-05-21T12:17:28.144157"
+ },
+{
+ "taskId": "a4a7be3f-22d6-4d69-9c28-77d7ef651152",
+ "name": "test2",
+ "type": "DAILY",
+ "status": "PLANNED",
+ "createdAt": "2026-05-21T12:54:12.374735",
+ "updatedAt": "2026-05-21T12:54:12.375441"
+},
+{
+ "taskId": "354c560a-3753-434b-b06a-fac91eff3543",
+ "name": "marek",
+ "type": "DAILY",
+ "status": "PLANNED",
+ "createdAt": "2026-05-21T12:54:26.828058",
+ "updatedAt": "2026-05-21T12:54:26.828774"
+}
+
+]
