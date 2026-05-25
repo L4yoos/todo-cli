@@ -14,9 +14,9 @@ public class Main {
         System.out.println("6. Settings");
         System.out.println("0. Quit");
 
-        //todo exception for non-int input
         System.out.print("Type your option: ");
-        int option = scanner.nextInt();
+        int option;
+        option = readOption();
 
         while (option != 0) {
             switch (option) {
@@ -30,6 +30,7 @@ public class Main {
                     break;
                 case 2:
                     System.out.println("This is your list: ");
+                    TaskService.readTasks();
                     //todo reader from CSV or JSON
                     break;
                 case 3:
@@ -42,19 +43,33 @@ public class Main {
                     break;
                 case 5:
                     System.out.println("Delete your Task: ");
-                    //todo taskService
+                    System.out.print("Type last 4 chars from taskId: ");
+                    String lastFourChars = scanner.next();
+                    TaskService.deleteTask(lastFourChars);
                     break;
                 case 6:
                     System.out.println("Settings: ");
+                    //todo add CSV or JSON format file
                     break;
                 default:
                     break;
             }
             System.out.println("You need to type from 0 to 6. Type 0 to quit.");
             System.out.print("Type your option: ");
-            option = scanner.nextInt();
+            option = readOption();
         }
 
         System.out.println("Goodbye!");
+    }
+
+    private static int readOption() {
+        Scanner scanner = new Scanner(System.in);
+        try {
+            String input = scanner.nextLine();
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a number from menu.");
+            return -1;
+        }
     }
 }
