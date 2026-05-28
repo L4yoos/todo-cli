@@ -1,3 +1,4 @@
+import repository.TaskRepository;
 import service.TaskService;
 
 import java.io.IOException;
@@ -20,7 +21,8 @@ public class Main {
         String lastFourChars;
         option = readOption(scanner);
 
-        TaskService taskService = new TaskService();
+        TaskRepository taskRepository = new TaskRepository();
+        TaskService taskService = new TaskService(taskRepository);
 
         while (option != 0) {
             switch (option) {

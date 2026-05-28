@@ -2,65 +2,29 @@ package service;
 
 import model.Task;
 import model.TaskType;
+import repository.TaskRepository;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TaskService {
 
-    private static final String FILE_PATH = "tasks.json";
+    private final TaskRepository taskRepository;
+
+    public TaskService(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
 
     public void createTask(String name, String type) {
         Task task = Task.of(name, TaskType.valueOf(type.toUpperCase()));
-        File file = new File(FILE_PATH);
-
-        if (file.exists() && file.length() > 0) {
-            try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-                long length = raf.length();
-                long pointer = length - 1;
-
-                while (pointer > 0) {
-                    raf.seek(pointer);
-                    char c = (char) raf.readByte();
-                    if (c == '}') {
-                        break;
-                    }
-                    pointer--;
-                }
-
-                raf.seek(pointer);
-                String newContent = "},\n" + task.toJson() + "]";
-                raf.write(newContent.getBytes());
-                raf.getFD().sync();
-
-                System.out.println("New task added to your list!");
-            } catch (FileNotFoundException e) {
-                System.err.println("File not found: " + e.getMessage());
-            } catch (IOException e) {
-                System.err.println("Error: " + e.getMessage());
-            }
-        } else {
-            try (FileWriter raf = new FileWriter(file)) {
-                raf.write("[\n");
-                raf.write(task.toJson());
-                raf.write("]");
-                raf.flush();
-                System.out.println("File JSON saved!");
-            } catch (FileNotFoundException e) {
-                System.err.println("File not found: " + e.getMessage());
-            } catch (IOException e) {
-                System.err.println("Error: " + e.getMessage());
-            }
-        }
+        taskRepository.addTask(task);
     }
 
     public void readTasks() throws IOException {
-        this.checkFileExists();
-        String content = Files.readString(Path.of(FILE_PATH));
+        String content = taskRepository.readContent();
+
         String regex = "\"taskId\"\\s*:\\s*\"([^\"]+)\"" +
                         ".*?\"name\"\\s*:\\s*\"([^\"]+)\"" +
                         ".*?\"type\"\\s*:\\s*\"([^\"]+)\"" +
@@ -80,8 +44,7 @@ public class TaskService {
     }
 
     public void checkTask(String lastFourChars) throws IOException {
-        File file = this.checkFileExists();
-        String content = Files.readString(Path.of(FILE_PATH));
+        String content = taskRepository.readContent();
 
         String idRegex = "\"taskId\"\\s*:\\s*\"([^\"]*" + lastFourChars + ")\"";
         Matcher idMatcher = Pattern.compile(idRegex).matcher(content);
@@ -103,11 +66,7 @@ public class TaskService {
                 taskMatcher.appendReplacement(sb, Matcher.quoteReplacement(updated));
 
                 taskMatcher.appendTail(sb);
-                try (FileWriter raf = new FileWriter(file)) {
-                    raf.write(sb.toString());
-                    raf.flush();
-                    System.out.println("File JSON saved!");
-                }
+                taskRepository.saveContent(sb.toString());
             } else {
                 System.out.println("We don't found Task with last four chars: " + lastFourChars);
             }
@@ -115,8 +74,7 @@ public class TaskService {
     }
 
     public void updateTask(String lastFourChars, int updateOption, String newUpdate) throws IOException {
-        File file = this.checkFileExists();
-        String content = Files.readString(Path.of(FILE_PATH));
+        String content = taskRepository.readContent();
 
         String idRegex = "\"taskId\"\\s*:\\s*\"([^\"]*" + lastFourChars + ")\"";
         Matcher idMatcher = Pattern.compile(idRegex).matcher(content);
@@ -150,19 +108,14 @@ public class TaskService {
             }
 
             taskMatcher.appendTail(sb);
-            try (FileWriter raf = new FileWriter(file)) {
-                raf.write(sb.toString());
-                raf.flush();
-                System.out.println("File JSON saved!");
-            }
+            taskRepository.saveContent(sb.toString());
         } else {
             System.out.println("We don't found Task with last four chars: " + lastFourChars);
         }
     }
 
     public void deleteTask(String lastFourChars) throws IOException {
-        File file = this.checkFileExists();
-        String content = Files.readString(Path.of(FILE_PATH));
+        String content = taskRepository.readContent();
 
         String idRegex = "\"taskId\"\\s*:\\s*\"([^\"]*" + lastFourChars + ")\"";
         Matcher idMatcher = Pattern.compile(idRegex).matcher(content);
@@ -174,19 +127,7 @@ public class TaskService {
 
             String result = taskMatcher.replaceAll("");
 
-            try (FileWriter raf = new FileWriter(file)) {
-                raf.write(result);
-                raf.flush();
-                System.out.println("File JSON saved!");
-            }
+            taskRepository.saveContent(result);
         }
-    }
-
-    private File checkFileExists() throws IOException {
-        File f = new File(FILE_PATH);
-        if (!f.exists() || f.length() == 0) {
-            throw new IOException("File is empty or didn't exists.");
-        }
-        return f;
     }
 }
