@@ -14,7 +14,7 @@ public class Task {
 
     Task(String name, TaskType type) {
         this.taskId = UUID.randomUUID();
-        this.name = Objects.requireNonNull(name, "Name is required.");
+        this.name = validateName(name);
         this.type = Objects.requireNonNull(type, "Type is required.");
         this.status = TaskStatus.PLANNED;
         this.createdAt = LocalDateTime.now();
@@ -26,6 +26,18 @@ public class Task {
                 name,
                 type
         );
+    }
+
+    private static String validateName(String name) {
+        Objects.requireNonNull(name, "Name is required.");
+        name = name.trim();
+        if (name.length() < 2) {
+            throw new IllegalArgumentException("Name is too short.");
+        }
+        if (name.length() > 100) {
+            throw new IllegalArgumentException("Name is too long.");
+        }
+        return name;
     }
 
     public UUID getTaskId() { return taskId; }

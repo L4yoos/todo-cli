@@ -1,9 +1,10 @@
 import service.TaskService;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Hello and welcome in your todo-app!");
         Scanner scanner = new Scanner(System.in);
         System.out.println("1. Create new task");
@@ -16,12 +17,12 @@ public class Main {
 
         System.out.print("Type your option: ");
         int option;
+        String lastFourChars;
         option = readOption();
 
         while (option != 0) {
             switch (option) {
                 case 1:
-                    System.out.println("Create your new Task: ");
                     System.out.print("Type name of task: ");
                     String name = scanner.next();
                     System.out.print("Type type of task [DAILY, ROUTINE, DISPOSABLE]: ");
@@ -29,22 +30,41 @@ public class Main {
                     TaskService.createTask(name, type);
                     break;
                 case 2:
-                    System.out.println("This is your list: ");
                     TaskService.readTasks();
-                    //todo reader from CSV or JSON
                     break;
                 case 3:
                     System.out.println("Check your Task: ");
-                    //todo taskService
+                    System.out.print("Type last 4 chars from taskId: ");
+                    lastFourChars = scanner.next();
+                    TaskService.checkTask(lastFourChars);
                     break;
                 case 4:
                     System.out.println("Update your Task: ");
-                    //todo taskService
+                    System.out.print("Type last 4 chars from taskId: ");
+                    lastFourChars = scanner.next();
+                    System.out.println("1. Update name of Task");
+                    System.out.println("2. Update type of Task");
+                    System.out.print("Type a number of option: ");
+                    int optionUpdate = scanner.nextInt();
+                    String newUpdate = "";
+                    switch (optionUpdate) {
+                        case 1:
+                            System.out.print("Type a new name: ");
+                            newUpdate = scanner.next();
+                            break;
+                        case 2:
+                            System.out.print("Type type of task [DAILY, ROUTINE, DISPOSABLE]: ");
+                            newUpdate = scanner.next();
+                            break;
+                        default:
+                            break;
+                    }
+                    TaskService.updateTask(lastFourChars, optionUpdate, newUpdate);
                     break;
                 case 5:
                     System.out.println("Delete your Task: ");
                     System.out.print("Type last 4 chars from taskId: ");
-                    String lastFourChars = scanner.next();
+                    lastFourChars = scanner.next();
                     TaskService.deleteTask(lastFourChars);
                     break;
                 case 6:
