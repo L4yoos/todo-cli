@@ -14,7 +14,7 @@ public class TaskService {
 
     private static final String FILE_PATH = "tasks.json";
 
-    public static void createTask(String name, String type) {
+    public void createTask(String name, String type) {
         Task task = Task.of(name, TaskType.valueOf(type.toUpperCase()));
         File file = new File(FILE_PATH);
 
@@ -58,8 +58,8 @@ public class TaskService {
         }
     }
 
-    public static void readTasks() throws IOException {
-        checkFileExists();
+    public void readTasks() throws IOException {
+        this.checkFileExists();
         String content = Files.readString(Path.of(FILE_PATH));
         String regex = "\"taskId\"\\s*:\\s*\"([^\"]+)\"" +
                         ".*?\"name\"\\s*:\\s*\"([^\"]+)\"" +
@@ -79,8 +79,8 @@ public class TaskService {
         }
     }
 
-    public static void checkTask(String lastFourChars) throws IOException {
-        File file = checkFileExists();
+    public void checkTask(String lastFourChars) throws IOException {
+        File file = this.checkFileExists();
         String content = Files.readString(Path.of(FILE_PATH));
 
         String idRegex = "\"taskId\"\\s*:\\s*\"([^\"]*" + lastFourChars + ")\"";
@@ -114,8 +114,8 @@ public class TaskService {
         }
     }
 
-    public static void updateTask(String lastFourChars, int updateOption, String newUpdate) throws IOException {
-        File file = checkFileExists();
+    public void updateTask(String lastFourChars, int updateOption, String newUpdate) throws IOException {
+        File file = this.checkFileExists();
         String content = Files.readString(Path.of(FILE_PATH));
 
         String idRegex = "\"taskId\"\\s*:\\s*\"([^\"]*" + lastFourChars + ")\"";
@@ -160,8 +160,8 @@ public class TaskService {
         }
     }
 
-    public static void deleteTask(String lastFourChars) throws IOException {
-        File file = checkFileExists();
+    public void deleteTask(String lastFourChars) throws IOException {
+        File file = this.checkFileExists();
         String content = Files.readString(Path.of(FILE_PATH));
 
         String idRegex = "\"taskId\"\\s*:\\s*\"([^\"]*" + lastFourChars + ")\"";
@@ -182,7 +182,7 @@ public class TaskService {
         }
     }
 
-    private static File checkFileExists() throws IOException {
+    private File checkFileExists() throws IOException {
         File f = new File(FILE_PATH);
         if (!f.exists() || f.length() == 0) {
             throw new IOException("File is empty or didn't exists.");

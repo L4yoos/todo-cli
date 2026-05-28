@@ -28,6 +28,7 @@ public class Task {
         );
     }
 
+    //todo validation for special chars "" or {} etc.
     private static String validateName(String name) {
         Objects.requireNonNull(name, "Name is required.");
         name = name.trim();

@@ -18,54 +18,56 @@ public class Main {
         System.out.print("Type your option: ");
         int option;
         String lastFourChars;
-        option = readOption();
+        option = readOption(scanner);
+
+        TaskService taskService = new TaskService();
 
         while (option != 0) {
             switch (option) {
                 case 1:
                     System.out.print("Type name of task: ");
-                    String name = scanner.next();
+                    String name = scanner.nextLine();
                     System.out.print("Type type of task [DAILY, ROUTINE, DISPOSABLE]: ");
-                    String type = scanner.next();
-                    TaskService.createTask(name, type);
+                    String type = scanner.nextLine();
+                    taskService.createTask(name, type);
                     break;
                 case 2:
-                    TaskService.readTasks();
+                    taskService.readTasks();
                     break;
                 case 3:
                     System.out.println("Check your Task: ");
                     System.out.print("Type last 4 chars from taskId: ");
-                    lastFourChars = scanner.next();
-                    TaskService.checkTask(lastFourChars);
+                    lastFourChars = scanner.nextLine();
+                    taskService.checkTask(lastFourChars);
                     break;
                 case 4:
                     System.out.println("Update your Task: ");
                     System.out.print("Type last 4 chars from taskId: ");
-                    lastFourChars = scanner.next();
+                    lastFourChars = scanner.nextLine();
                     System.out.println("1. Update name of Task");
                     System.out.println("2. Update type of Task");
                     System.out.print("Type a number of option: ");
-                    int optionUpdate = scanner.nextInt();
+                    int optionUpdate = readOption(scanner);
                     String newUpdate = "";
                     switch (optionUpdate) {
                         case 1:
                             System.out.print("Type a new name: ");
-                            newUpdate = scanner.next();
+                            newUpdate = scanner.nextLine();
                             break;
                         case 2:
                             System.out.print("Type type of task [DAILY, ROUTINE, DISPOSABLE]: ");
-                            newUpdate = scanner.next();
+                            newUpdate = scanner.nextLine();
                             break;
                         default:
                             break;
                     }
-                    TaskService.updateTask(lastFourChars, optionUpdate, newUpdate);
+                    taskService.updateTask(lastFourChars, optionUpdate, newUpdate);
                     break;
                 case 5:
                     System.out.println("Delete your Task: ");
                     System.out.print("Type last 4 chars from taskId: ");
-                    lastFourChars = scanner.next();
-                    TaskService.deleteTask(lastFourChars);
+                    lastFourChars = scanner.nextLine();
+                    taskService.deleteTask(lastFourChars);
                     break;
                 case 6:
                     System.out.println("Settings: ");
@@ -76,14 +78,13 @@ public class Main {
             }
             System.out.println("You need to type from 0 to 6. Type 0 to quit.");
             System.out.print("Type your option: ");
-            option = readOption();
+            option = readOption(scanner);
         }
 
         System.out.println("Goodbye!");
     }
 
-    private static int readOption() {
-        Scanner scanner = new Scanner(System.in);
+    private static int readOption(Scanner scanner) {
         try {
             String input = scanner.nextLine();
             return Integer.parseInt(input);
