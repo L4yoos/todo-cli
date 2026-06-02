@@ -122,7 +122,7 @@ public class TaskService {
 
         if (idMatcher.find()) {
             String taskId = idMatcher.group(1);
-            String taskRegex = "\\s*\\{\\s*\"taskId\"\\s*:\\s*\"[^\"]*" + taskId + "\".*?\\}(,)?";
+            String taskRegex = "(,)?\\s*\\{\\s*\"taskId\"\\s*:\\s*\"[^\"]*" + taskId + "\".*?\\}(,)?";
             Matcher taskMatcher = Pattern.compile(taskRegex, Pattern.DOTALL).matcher(content);
 
             String result = taskMatcher.replaceAll("");

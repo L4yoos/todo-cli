@@ -32,6 +32,10 @@ public class TaskRepository {
                 }
                 pointer--;
             }
+            if (pointer == 0) {
+                saveContent("[\n" + task.toJson() + "]");
+                return;
+            }
 
             raf.seek(pointer);
             String newContent = "},\n" + task.toJson() + "]";
