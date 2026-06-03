@@ -48,7 +48,7 @@ public class Task {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
     public void setTaskId(UUID taskId) { this.taskId = taskId; }
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) { this.name = validateName(name); }
     public void setType(TaskType type) { this.type = type; }
     public void setStatus(TaskStatus status) { this.status = status; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
@@ -63,5 +63,17 @@ public class Task {
                     " \"createdAt\": \"" + createdAt.toString() + "\",\n" +
                     " \"updatedAt\": \"" + updatedAt.toString() + "\"\n" +
                 "}\n";
+    }
+
+    public static Task fromJsonParts(
+            UUID taskId, String name, TaskType type,
+            TaskStatus status, LocalDateTime createdAt, LocalDateTime updatedAt
+    ) {
+        Task task = new Task(name, type);
+        task.setTaskId(taskId);
+        task.setStatus(status);
+        task.setCreatedAt(createdAt);
+        task.setUpdatedAt(updatedAt);
+        return task;
     }
 }

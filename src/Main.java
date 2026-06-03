@@ -34,7 +34,7 @@ public class Main {
                     taskService.createTask(name, type);
                     break;
                 case 2:
-                    taskService.readTasks();
+                    taskService.displayTasks();
                     break;
                 case 3:
                     System.out.println("Check your Task: ");

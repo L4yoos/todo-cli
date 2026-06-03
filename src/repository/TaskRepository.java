@@ -5,6 +5,7 @@ import model.Task;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class TaskRepository {
     private static final String FILE_PATH = "tasks.json";
@@ -48,7 +49,20 @@ public class TaskRepository {
         }
     }
 
-    public void saveContent(String content) {
+
+    public void saveAll(List<Task> tasks) {
+        StringBuilder sb = new StringBuilder("[\n");
+        for (int i = 0; i < tasks.size(); i ++) {
+            sb.append(tasks.get(i).toJson());
+            if (i < tasks.size() - 1) {
+                sb.append(",");
+            }
+        }
+        sb.append("\n]");
+        saveContent(sb.toString());
+    }
+
+    private void saveContent(String content) {
         try (FileWriter fw = new FileWriter(FILE_PATH)) {
             fw.write(content);
             fw.flush();
