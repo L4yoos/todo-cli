@@ -11,7 +11,14 @@ public class TaskRepository {
     private static final String FILE_PATH = "tasks.json";
 
     public String readContent() throws IOException {
-        this.checkFileExists();
+        try {
+            this.checkFileExists();
+        } catch (FileNotFoundException e) {
+            System.out.println("[]");
+            return "";
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
         return Files.readString(Path.of(FILE_PATH));
     }
 
