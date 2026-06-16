@@ -7,12 +7,8 @@ import repository.TaskRepository;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TaskService {
 
@@ -22,13 +18,13 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public void createTask(String name, String type) {
+    public void createTask(String name, String type) throws IOException {
         Task task = Task.of(name, TaskType.valueOf(type.toUpperCase()));
         taskRepository.addTask(task);
     }
 
     public void displayTasks() throws IOException {
-        List<Task> tasks = this.readTasks();
+        List<Task> tasks = taskRepository.readTasks();
         if (tasks.isEmpty()) {
             System.out.println("No tasks found.");
             return;
@@ -45,7 +41,7 @@ public class TaskService {
     }
 
     public void checkTask(String lastFourChars) throws IOException {
-        List<Task> tasks = this.readTasks();
+        List<Task> tasks = taskRepository.readTasks();
 
         Optional<Task> taskOptional = tasks.stream()
                 .filter(t -> t.getTaskId().toString().endsWith(lastFourChars))
@@ -68,7 +64,7 @@ public class TaskService {
     }
 
     public void updateTask(String lastFourChars, int updateOption, String newUpdate) throws IOException {
-        List<Task> tasks = this.readTasks();
+        List<Task> tasks = taskRepository.readTasks();
 
         Optional<Task> taskOptional = tasks.stream()
                 .filter(t -> t.getTaskId().toString().endsWith(lastFourChars))
@@ -96,7 +92,7 @@ public class TaskService {
     }
 
     public void deleteTask(String lastFourChars) throws IOException {
-        List<Task> tasks = this.readTasks();
+        List<Task> tasks = taskRepository.readTasks();
 
         Optional<Task> taskOptional = tasks.stream()
                 .filter(t -> t.getTaskId().toString().endsWith(lastFourChars))
@@ -107,31 +103,5 @@ public class TaskService {
             tasks.remove(task);
             taskRepository.saveAll(tasks);
         }
-    }
-
-    private List<Task> readTasks() throws IOException {
-        String content = taskRepository.readContent();
-
-        String regex = "\"taskId\"\\s*:\\s*\"([^\"]+)\"" +
-                ".*?\"name\"\\s*:\\s*\"([^\"]+)\"" +
-                ".*?\"type\"\\s*:\\s*\"([^\"]+)\"" +
-                ".*?\"status\"\\s*:\\s*\"([^\"]+)\"" +
-                ".*?\"createdAt\"\\s*:\\s*\"([^\"]+)\"" +
-                ".*?\"updatedAt\"\\s*:\\s*\"([^\"]+)\"";
-        Matcher matcher = Pattern.compile(regex, Pattern.DOTALL).matcher(content);
-        List<Task> tasks = new ArrayList<>();
-        while (matcher.find()) {
-            tasks.add(
-                    Task.fromJsonParts(
-                            UUID.fromString(matcher.group(1)),
-                            matcher.group(2),
-                            TaskType.valueOf(matcher.group(3)),
-                            TaskStatus.valueOf(matcher.group(4)),
-                            LocalDateTime.parse(matcher.group(5)),
-                            LocalDateTime.parse(matcher.group(6))
-                    )
-            );
-        }
-        return tasks;
     }
 }
