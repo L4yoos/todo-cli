@@ -1,11 +1,18 @@
 package repository;
 
 import model.Task;
+import model.TaskStatus;
+import model.TaskType;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TaskRepository {
     private static final String FILE_PATH = "tasks.json";
@@ -14,7 +21,6 @@ public class TaskRepository {
         try {
             this.checkFileExists();
         } catch (FileNotFoundException e) {
-            System.out.println("[]");
             return "";
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
@@ -22,47 +28,18 @@ public class TaskRepository {
         return Files.readString(Path.of(FILE_PATH));
     }
 
-    public void addTask(Task task) {
-        File file = readFile();
-        if (!file.exists() || file.length() == 0) {
-            saveContent("[\n" + task.toJson() + "]");
-            return;
-        }
-
-        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-            long pointer = raf.length() - 1;
-
-            while (pointer > 0) {
-                raf.seek(pointer);
-                char c = (char) raf.readByte();
-                if (c == '}') {
-                    break;
-                }
-                pointer--;
-            }
-            if (pointer == 0) {
-                saveContent("[\n" + task.toJson() + "]");
-                return;
-            }
-
-            raf.seek(pointer);
-            String newContent = "},\n" + task.toJson() + "]";
-            raf.write(newContent.getBytes());
-            System.out.println("New task added to your list!");
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
+    public void addTask(Task task) throws IOException {
+        List<Task> tasks = this.readTasks();
+        tasks.add(task);
+        this.saveAll(tasks);
     }
-
 
     public void saveAll(List<Task> tasks) {
         StringBuilder sb = new StringBuilder("[\n");
         for (int i = 0; i < tasks.size(); i ++) {
             sb.append(tasks.get(i).toJson());
             if (i < tasks.size() - 1) {
-                sb.append(",");
+                sb.append(",\n");
             }
         }
         sb.append("\n]");
@@ -79,14 +56,36 @@ public class TaskRepository {
         }
     }
 
-    private File readFile() {
-        return new File(FILE_PATH);
-    }
-
     private void checkFileExists() throws IOException {
         File f = new File(FILE_PATH);
         if (!f.exists() || f.length() == 0) {
             throw new FileNotFoundException("File is empty or didn't exists.");
         }
+    }
+
+    public List<Task> readTasks() throws IOException {
+        String content = this.readContent();
+
+        String regex = "\"taskId\"\\s*:\\s*\"([^\"]+)\"" +
+                ".*?\"name\"\\s*:\\s*\"([^\"]+)\"" +
+                ".*?\"type\"\\s*:\\s*\"([^\"]+)\"" +
+                ".*?\"status\"\\s*:\\s*\"([^\"]+)\"" +
+                ".*?\"createdAt\"\\s*:\\s*\"([^\"]+)\"" +
+                ".*?\"updatedAt\"\\s*:\\s*\"([^\"]+)\"";
+        Matcher matcher = Pattern.compile(regex, Pattern.DOTALL).matcher(content);
+        List<Task> tasks = new ArrayList<>();
+        while (matcher.find()) {
+            tasks.add(
+                    Task.fromJsonParts(
+                            UUID.fromString(matcher.group(1)),
+                            matcher.group(2),
+                            TaskType.valueOf(matcher.group(3)),
+                            TaskStatus.valueOf(matcher.group(4)),
+                            LocalDateTime.parse(matcher.group(5)),
+                            LocalDateTime.parse(matcher.group(6))
+                    )
+            );
+        }
+        return tasks;
     }
 }

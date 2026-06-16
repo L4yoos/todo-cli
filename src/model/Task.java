@@ -62,7 +62,7 @@ public class Task {
                     " \"status\": \"" + status.name() + "\",\n" +
                     " \"createdAt\": \"" + createdAt.toString() + "\",\n" +
                     " \"updatedAt\": \"" + updatedAt.toString() + "\"\n" +
-                "}\n";
+                "}";
     }
 
     public static Task fromJsonParts(
