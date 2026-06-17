@@ -6,7 +6,6 @@ import model.TaskType;
 import repository.TaskRepository;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +55,6 @@ public class TaskService {
             }
 
             task.setStatus(TaskStatus.DONE);
-            task.setUpdatedAt(LocalDateTime.now());
             taskRepository.saveAll(tasks);
         } else {
             System.out.println("We don't found Task with last four chars: " + lastFourChars);
@@ -76,11 +74,9 @@ public class TaskService {
             switch(updateOption) {
                 case 1:
                     task.setName(newUpdate);
-                    task.setUpdatedAt(LocalDateTime.now());
                     break;
                 case 2:
                     task.setType(TaskType.valueOf(newUpdate.toUpperCase()));
-                    task.setUpdatedAt(LocalDateTime.now());
                     break;
                 default:
                     break;
