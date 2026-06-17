@@ -5,11 +5,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Task {
-    private UUID taskId;
+    private final UUID taskId;
     private String name;
     private TaskType type;
     private TaskStatus status;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     Task(String name, TaskType type) {
@@ -19,6 +19,18 @@ public class Task {
         this.status = TaskStatus.PLANNED;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+    }
+
+    private Task(
+            UUID taskId, String name, TaskType type,
+            TaskStatus status, LocalDateTime createdAt, LocalDateTime updatedAt
+    ) {
+        this.taskId = taskId;
+        this.name = validateName(name);
+        this.type = Objects.requireNonNull(type, "Type is required.");;
+        this.status = Objects.requireNonNull(status, "Status is required.");;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public static Task of(String name, TaskType type) {
@@ -47,12 +59,18 @@ public class Task {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setTaskId(UUID taskId) { this.taskId = taskId; }
-    public void setName(String name) { this.name = validateName(name); }
-    public void setType(TaskType type) { this.type = type; }
-    public void setStatus(TaskStatus status) { this.status = status; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setName(String name) {
+        this.name = validateName(name);
+        this.updatedAt = LocalDateTime.now();
+    }
+    public void setType(TaskType type) {
+        this.type = type;
+        this.updatedAt = LocalDateTime.now();
+    }
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+        this.updatedAt = LocalDateTime.now();
+    }
 
     public String toJson() {
         return "{\n" +
@@ -69,11 +87,9 @@ public class Task {
             UUID taskId, String name, TaskType type,
             TaskStatus status, LocalDateTime createdAt, LocalDateTime updatedAt
     ) {
-        Task task = new Task(name, type);
-        task.setTaskId(taskId);
-        task.setStatus(status);
-        task.setCreatedAt(createdAt);
-        task.setUpdatedAt(updatedAt);
-        return task;
+        return new Task(
+                taskId, name, type,
+                status, createdAt, updatedAt
+        );
     }
 }
