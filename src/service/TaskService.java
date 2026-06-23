@@ -18,8 +18,11 @@ public class TaskService {
     }
 
     public void createTask(String name, String type) throws IOException {
-        Task task = Task.of(name, TaskType.valueOf(type.toUpperCase()));
-        taskRepository.addTask(task);
+        Optional<TaskType> taskType = TaskType.fromString(type);
+        if (taskType.isPresent()) {
+            Task task = Task.of(name, taskType.get());
+            taskRepository.addTask(task);
+        }
     }
 
     public void displayTasks() throws IOException {
@@ -57,7 +60,7 @@ public class TaskService {
             task.setStatus(TaskStatus.DONE);
             taskRepository.saveAll(tasks);
         } else {
-            System.out.println("We don't found Task with last four chars: " + lastFourChars);
+            System.out.println("We didn't find Task with last four chars: " + lastFourChars);
         }
     }
 
@@ -76,14 +79,15 @@ public class TaskService {
                     task.setName(newUpdate);
                     break;
                 case 2:
-                    task.setType(TaskType.valueOf(newUpdate.toUpperCase()));
+                    Optional<TaskType> taskType = TaskType.fromString(newUpdate);
+                    if (taskType.isPresent()) task.setType(taskType.get());
                     break;
                 default:
                     break;
             }
             taskRepository.saveAll(tasks);
         } else {
-            System.out.println("We don't found Task with last four chars: " + lastFourChars);
+            System.out.println("We didn't find Task with last four chars: " + lastFourChars);
         }
     }
 

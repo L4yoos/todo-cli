@@ -76,9 +76,9 @@ public class Main {
                     //todo add CSV or JSON format file
                     break;
                 default:
+                    System.out.println("You need to type from 0 to 6. Type 0 to quit.");
                     break;
             }
-            System.out.println("You need to type from 0 to 6. Type 0 to quit.");
             System.out.print("Type your option: ");
             option = readOption(scanner);
         }

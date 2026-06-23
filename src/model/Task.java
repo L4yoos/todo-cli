@@ -92,4 +92,6 @@ public class Task {
                 status, createdAt, updatedAt
         );
     }
+
+    //todo add equals and hashcode
 }
