@@ -28,10 +28,11 @@ public class TaskRepository {
         return Files.readString(Path.of(FILE_PATH));
     }
 
-    public void addTask(Task task) throws IOException {
+    public Task addTask(Task task) throws IOException {
         List<Task> tasks = this.readTasks();
         tasks.add(task);
         this.saveAll(tasks);
+        return task;
     }
 
     public void saveAll(List<Task> tasks) {
