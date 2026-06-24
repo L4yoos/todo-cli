@@ -1,7 +1,9 @@
+import model.Task;
 import repository.TaskRepository;
 import service.TaskService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -31,10 +33,20 @@ public class Main {
                     String name = scanner.nextLine();
                     System.out.print("Type type of task [DAILY, ROUTINE, DISPOSABLE]: ");
                     String type = scanner.nextLine();
-                    taskService.createTask(name, type);
+                    System.out.println(taskService.createTask(name, type));
                     break;
                 case 2:
-                    taskService.displayTasks();
+                    List<Task> tasks = taskService.displayTasks();
+                    if (tasks.isEmpty()) System.out.println("No tasks found.");
+                    tasks.forEach(task -> {
+                        System.out.println("TaskId: " + task.getTaskId());
+                        System.out.println("Name: " + task.getName());
+                        System.out.println("Type: " + task.getType());
+                        System.out.println("Status: " + task.getStatus());
+                        System.out.println("createdAt: " + task.getCreatedAt());
+                        System.out.println("updatedAt: " + task.getUpdatedAt());
+                        System.out.println("---");
+                    });
                     break;
                 case 3:
                     System.out.println("Check your Task: ");

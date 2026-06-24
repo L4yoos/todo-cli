@@ -11,8 +11,6 @@ public enum TaskType {
         try {
             return Optional.of(TaskType.valueOf(value.toUpperCase()));
         } catch (IllegalArgumentException e) {
-            System.err.println("Wrong TaskType.");
-            System.out.println();
             return Optional.empty();
         }
     }

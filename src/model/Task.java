@@ -93,5 +93,25 @@ public class Task {
         );
     }
 
-    //todo add equals and hashcode
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return  Objects.equals(taskId, task.taskId) &&
+                Objects.equals(name, task.name) &&
+                type == task.type &&
+                status == task.status &&
+                Objects.equals(createdAt, task.createdAt) &&
+                Objects.equals(updatedAt, task.updatedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskId, name, type, status, createdAt, updatedAt);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("taskId: %s,\nname: %s,\ntype: %s,\nstatus: %s,\ncreatedAt: %s,\nupdatedAt: %s", taskId, name, type, status, createdAt, updatedAt);
+    }
 }
