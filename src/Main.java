@@ -2,12 +2,11 @@ import model.Task;
 import repository.TaskRepository;
 import service.TaskService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         System.out.println("Hello and welcome in your todo-app!");
         Scanner scanner = new Scanner(System.in);
         System.out.println("1. Create new task");
