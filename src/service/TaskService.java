@@ -18,11 +18,11 @@ public class TaskService {
     public Task createTask(String name, String type) {
         TaskType taskType = TaskType.fromString(type)
                 .orElseThrow(() -> new IllegalArgumentException("Wrong TaskType."));
-        return taskRepository.addTask(Task.of(name, taskType));
+        return taskRepository.save(Task.of(name, taskType));
     }
 
     public List<Task> displayTasks() {
-        return taskRepository.readTasks();
+        return taskRepository.getTasks();
     }
 
     public void checkTask(String lastFourChars) {
