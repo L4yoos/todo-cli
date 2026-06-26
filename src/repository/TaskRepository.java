@@ -18,14 +18,52 @@ import java.util.regex.Pattern;
 public class TaskRepository {
     private static final String FILE_PATH = "tasks.json";
 
-    public Task addTask(Task task) {
-        List<Task> tasks = this.readTasks();
-        tasks.add(task);
-        this.saveAll(tasks);
+    private List<Task> tasks = new ArrayList<>();
+
+    public TaskRepository() {
+        tasks = this.readTasks();
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public Optional<Task> findByLastFourChars(String lastFourChars) {
+        return tasks.stream()
+                .filter(t -> t.getTaskId().toString().endsWith(lastFourChars))
+                .findFirst();
+    }
+
+    public Task save(Task task) {
+        int index = -1;
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).getTaskId().equals(task.getTaskId())) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index != -1) {
+            tasks.set(index, task);
+        } else {
+            tasks.add(task);
+        }
+
+        this.saveAll();
         return task;
     }
 
-    public List<Task> readTasks() {
+    public void delete(String lastFourChars) {
+        findByLastFourChars(lastFourChars).ifPresentOrElse(
+                task -> {
+                    tasks.remove(task);
+                    this.saveAll();
+                },
+                () -> System.err.println("We didn't find Task with last four chars: " + lastFourChars)
+        );
+    }
+
+    private List<Task> readTasks() {
         String content = this.readContent();
 
         String regex = "\"taskId\"\\s*:\\s*\"([^\"]+)\"" +
@@ -35,7 +73,6 @@ public class TaskRepository {
                 ".*?\"createdAt\"\\s*:\\s*\"([^\"]+)\"" +
                 ".*?\"updatedAt\"\\s*:\\s*\"([^\"]+)\"";
         Matcher matcher = Pattern.compile(regex, Pattern.DOTALL).matcher(content);
-        List<Task> tasks = new ArrayList<>();
         while (matcher.find()) {
             tasks.add(
                     Task.fromJsonParts(
@@ -51,35 +88,7 @@ public class TaskRepository {
         return tasks;
     }
 
-    public Optional<Task> findByLastFourChars(String lastFourChars) {
-        List<Task> tasks = this.readTasks();
-        return tasks.stream()
-                .filter(t -> t.getTaskId().toString().endsWith(lastFourChars))
-                .findFirst();
-    }
-
-    //todo maybe add cache to memory with classes
-    public void save(Task task) {
-        List<Task> tasks = this.readTasks();
-
-        int index = -1;
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getTaskId().equals(task.getTaskId())) {
-                index = i;
-                break;
-            }
-        }
-
-        if (index != -1) {
-            tasks.set(index, task);
-        } else {
-            tasks.add(task);
-        }
-
-        this.saveAll(tasks);
-    }
-
-    public void saveAll(List<Task> tasks) {
+    private void saveAll() {
         StringBuilder sb = new StringBuilder("[\n");
         for (int i = 0; i < tasks.size(); i ++) {
             sb.append(tasks.get(i).toJson());
@@ -89,18 +98,6 @@ public class TaskRepository {
         }
         sb.append("\n]");
         saveContent(sb.toString());
-    }
-
-    public void delete(String lastFourChars) {
-        List<Task> tasks = this.readTasks();
-
-        findByLastFourChars(lastFourChars).ifPresentOrElse(
-                task -> {
-                    tasks.remove(task);
-                    this.saveAll(tasks);
-                },
-                () -> System.err.println("We didn't find Task with last four chars: " + lastFourChars)
-        );
     }
 
     private void saveContent(String content) {
