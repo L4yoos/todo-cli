@@ -9,13 +9,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Hello and welcome in your todo-app!");
         Scanner scanner = new Scanner(System.in);
-        System.out.println("1. Create new task");
-        System.out.println("2. View list");
-        System.out.println("3. Make checked task");
-        System.out.println("4. Update task");
-        System.out.println("5. Delete task");
-        System.out.println("6. Settings");
-        System.out.println("0. Quit");
+        printMenu();
 
         System.out.print("Type your option: ");
         int option;
@@ -66,15 +60,17 @@ public class Main {
                         case 1:
                             System.out.print("Type a new name: ");
                             newUpdate = scanner.nextLine();
+                            taskService.updateTask(lastFourChars, optionUpdate, newUpdate);
                             break;
                         case 2:
                             System.out.print("Type type of task [DAILY, ROUTINE, DISPOSABLE]: ");
                             newUpdate = scanner.nextLine();
+                            taskService.updateTask(lastFourChars, optionUpdate, newUpdate);
                             break;
                         default:
+                            System.out.println("Invalid update option. Aborting update.");
                             break;
                     }
-                    taskService.updateTask(lastFourChars, optionUpdate, newUpdate);
                     break;
                 case 5:
                     System.out.println("Delete your Task: ");
@@ -90,6 +86,7 @@ public class Main {
                     System.out.println("You need to type from 0 to 6. Type 0 to quit.");
                     break;
             }
+            printMenu();
             System.out.print("Type your option: ");
             option = readOption(scanner);
         }
@@ -105,5 +102,15 @@ public class Main {
             System.out.println("Please enter a number from menu.");
             return -1;
         }
+    }
+
+    private static void printMenu() {
+        System.out.println("1. Create new task");
+        System.out.println("2. View list");
+        System.out.println("3. Make checked task");
+        System.out.println("4. Update task");
+        System.out.println("5. Delete task");
+        System.out.println("6. Settings");
+        System.out.println("0. Quit");
     }
 }
