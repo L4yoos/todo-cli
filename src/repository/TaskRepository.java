@@ -63,6 +63,7 @@ public class TaskRepository {
         );
     }
 
+    //todo should create and return List<Task>, if function evoked 2 times we got duplicate items.
     private List<Task> readTasks() {
         String content = this.readContent();
 
@@ -104,7 +105,7 @@ public class TaskRepository {
         try (FileWriter fw = new FileWriter(FILE_PATH)) {
             fw.write(content);
         } catch (IOException e) {
-            throw new RuntimeException("Unexpected Error.");
+            throw new RuntimeException("Unexpected Error.", e);
         }
     }
 
@@ -116,8 +117,7 @@ public class TaskRepository {
             }
             return Files.readString(Path.of(FILE_PATH));
         } catch (IOException e) {
-            System.err.println("Unexpected Error.");
+            throw new RuntimeException("Unexpected Error.", e);
         }
-        return "";
     }
 }
