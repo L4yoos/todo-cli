@@ -1,5 +1,6 @@
 package repository;
 
+import exception.TaskNotFoundException;
 import model.Task;
 import model.TaskStatus;
 import model.TaskType;
@@ -18,14 +19,10 @@ import java.util.regex.Pattern;
 public class TaskRepository {
     private static final String FILE_PATH = "tasks.json";
 
-    private List<Task> tasks = new ArrayList<>();
-
-    public TaskRepository() {
-        tasks = this.readTasks();
-    }
+    private final List<Task> tasks = this.readTasks();
 
     public List<Task> getTasks() {
-        return tasks;
+        return List.copyOf(tasks);
     }
 
     public Optional<Task> findByLastFourChars(String lastFourChars) {
@@ -54,17 +51,14 @@ public class TaskRepository {
     }
 
     public void delete(String lastFourChars) {
-        findByLastFourChars(lastFourChars).ifPresentOrElse(
-                task -> {
-                    tasks.remove(task);
-                    this.saveAll();
-                },
-                () -> System.err.println("We didn't find Task with last four chars: " + lastFourChars)
-        );
+        Task task = this.findByLastFourChars(lastFourChars)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with: " + lastFourChars));
+        tasks.remove(task);
+        this.saveAll();
     }
 
-    //todo should create and return List<Task>, if function evoked 2 times we got duplicate items.
     private List<Task> readTasks() {
+        List<Task> tasks = new ArrayList<>();
         String content = this.readContent();
 
         String regex = "\"taskId\"\\s*:\\s*\"([^\"]+)\"" +

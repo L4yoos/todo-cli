@@ -1,5 +1,7 @@
 package service;
 
+import exception.TaskNotFoundException;
+import exception.WrongTaskTypeException;
 import model.Task;
 import model.TaskStatus;
 import model.TaskType;
@@ -17,7 +19,7 @@ public class TaskService {
 
     public Task createTask(String name, String type) {
         TaskType taskType = TaskType.fromString(type)
-                .orElseThrow(() -> new IllegalArgumentException("Wrong TaskType."));
+                .orElseThrow(() -> new WrongTaskTypeException("Wrong TaskType."));
         return taskRepository.save(Task.of(name, taskType));
     }
 
@@ -26,38 +28,31 @@ public class TaskService {
     }
 
     public void checkTask(String lastFourChars) {
-        taskRepository.findByLastFourChars(lastFourChars).ifPresentOrElse(
-                task -> {
-                    if (task.getStatus().equals(TaskStatus.DONE)) {
-                        System.out.println("This Task is already DONE.");
-                        return;
-                    }
-                    task.setStatus(TaskStatus.DONE);
-                    taskRepository.save(task);
-                },
-                () -> System.err.println("We didn't find Task with last four chars: " + lastFourChars)
-        );
+       Task task = taskRepository.findByLastFourChars(lastFourChars)
+               .orElseThrow(() -> new TaskNotFoundException("Task not found with: " + lastFourChars));
+
+       if (task.getStatus().equals(TaskStatus.DONE)) {
+           throw new IllegalStateException("This Task is already DONE.");
+       }
+
+       task.setStatus(TaskStatus.DONE);
+       taskRepository.save(task);
     }
 
     public void updateTask(String lastFourChars, int updateOption, String newUpdate) {
-        taskRepository.findByLastFourChars(lastFourChars).ifPresentOrElse(
-        task -> {
-                switch(updateOption) {
-                    case 1:
-                        task.setName(newUpdate);
-                        break;
-                    case 2:
-                        TaskType taskType = TaskType.fromString(newUpdate)
-                            .orElseThrow(() -> new IllegalArgumentException("Wrong TaskType."));
-                        task.setType(taskType);
-                        break;
-                    default:
-                        break;
-                }
-                taskRepository.save(task);
-            },
-            () -> System.err.println("We didn't find Task with last four chars: " + lastFourChars)
-        );
+        Task task = taskRepository.findByLastFourChars(lastFourChars)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with: " + lastFourChars));
+
+        switch(updateOption) {
+            case 1 -> task.setName(newUpdate);
+            case 2 -> {
+                TaskType taskType = TaskType.fromString(newUpdate)
+                    .orElseThrow(() -> new WrongTaskTypeException("Wrong TaskType."));
+                task.setType(taskType);
+            }
+            default -> throw new IllegalStateException("Invalid update option");
+        }
+        taskRepository.save(task);
     }
 
     public void deleteTask(String lastFourChars) {
