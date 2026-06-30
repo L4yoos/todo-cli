@@ -19,6 +19,7 @@ public class Main {
         TaskRepository taskRepository = new TaskRepository();
         TaskService taskService = new TaskService(taskRepository);
 
+        // todo make this more readable
         while (option != 0) {
             switch (option) {
                 case 1:
