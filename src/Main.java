@@ -1,108 +1,30 @@
-import model.Task;
+import cli.SwitchCLI;
 import repository.TaskRepository;
 import service.TaskService;
 
-import java.util.List;
 import java.util.Scanner;
+
+import static cli.SwitchCLI.readOption;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("Hello and welcome in your todo-app!");
-        Scanner scanner = new Scanner(System.in);
-        printMenu();
-
-        System.out.print("Type your option: ");
-        int option;
-        String lastFourChars;
-        option = readOption(scanner);
-
-        TaskRepository taskRepository = new TaskRepository();
-        TaskService taskService = new TaskService(taskRepository);
-
-        // todo make this more readable
-        while (option != 0) {
-            switch (option) {
-                case 1:
-                    System.out.print("Type name of task: ");
-                    String name = scanner.nextLine();
-                    System.out.print("Type type of task [DAILY, ROUTINE, DISPOSABLE]: ");
-                    String type = scanner.nextLine();
-                    System.out.println(taskService.createTask(name, type));
-                    break;
-                case 2:
-                    List<Task> tasks = taskService.displayTasks();
-                    if (tasks.isEmpty()) System.out.println("No tasks found.");
-                    tasks.forEach(task -> {
-                        System.out.println("TaskId: " + task.getTaskId());
-                        System.out.println("Name: " + task.getName());
-                        System.out.println("Type: " + task.getType());
-                        System.out.println("Status: " + task.getStatus());
-                        System.out.println("createdAt: " + task.getCreatedAt());
-                        System.out.println("updatedAt: " + task.getUpdatedAt());
-                        System.out.println("---");
-                    });
-                    break;
-                case 3:
-                    System.out.println("Check your Task: ");
-                    System.out.print("Type last 4 chars from taskId: ");
-                    lastFourChars = scanner.nextLine();
-                    taskService.checkTask(lastFourChars);
-                    break;
-                case 4:
-                    System.out.println("Update your Task: ");
-                    System.out.print("Type last 4 chars from taskId: ");
-                    lastFourChars = scanner.nextLine();
-                    System.out.println("1. Update name of Task");
-                    System.out.println("2. Update type of Task");
-                    System.out.print("Type a number of option: ");
-                    int optionUpdate = readOption(scanner);
-                    String newUpdate = "";
-                    switch (optionUpdate) {
-                        case 1:
-                            System.out.print("Type a new name: ");
-                            newUpdate = scanner.nextLine();
-                            taskService.updateTask(lastFourChars, optionUpdate, newUpdate);
-                            break;
-                        case 2:
-                            System.out.print("Type type of task [DAILY, ROUTINE, DISPOSABLE]: ");
-                            newUpdate = scanner.nextLine();
-                            taskService.updateTask(lastFourChars, optionUpdate, newUpdate);
-                            break;
-                        default:
-                            System.out.println("Invalid update option. Aborting update.");
-                            break;
-                    }
-                    break;
-                case 5:
-                    System.out.println("Delete your Task: ");
-                    System.out.print("Type last 4 chars from taskId: ");
-                    lastFourChars = scanner.nextLine();
-                    taskService.deleteTask(lastFourChars);
-                    break;
-                case 6:
-                    System.out.println("Settings: ");
-                    //todo add CSV or JSON format file
-                    break;
-                default:
-                    System.out.println("You need to type from 0 to 6. Type 0 to quit.");
-                    break;
-            }
+        try (Scanner scanner = new Scanner(System.in)) {
             printMenu();
-            System.out.print("Type your option: ");
-            option = readOption(scanner);
-        }
 
+            int option = readOption(scanner);
+
+            TaskRepository taskRepository = new TaskRepository();
+            TaskService taskService = new TaskService(taskRepository);
+            SwitchCLI cli = new SwitchCLI(scanner, taskService);
+
+            while (option != 0) {
+                cli.getOption(option);
+                printMenu();
+                option = readOption(scanner);
+            }
+        }
         System.out.println("Goodbye!");
-    }
-
-    private static int readOption(Scanner scanner) {
-        try {
-            String input = scanner.nextLine();
-            return Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            System.out.println("Please enter a number from menu.");
-            return -1;
-        }
     }
 
     private static void printMenu() {
