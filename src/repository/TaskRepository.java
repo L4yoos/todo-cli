@@ -31,6 +31,7 @@ public class TaskRepository {
                 .findFirst();
     }
 
+    // TODO optimality this method
     public Task save(Task task) {
         int index = -1;
         for (int i = 0; i < tasks.size(); i++) {
@@ -107,7 +108,8 @@ public class TaskRepository {
         try {
             File f = new File(FILE_PATH);
             if (!f.exists() || f.length() == 0) {
-                throw new FileNotFoundException("File is empty or didn't exists.");
+                return "[]";
+//                throw new FileNotFoundException("File is empty or didn't exists.");
             }
             return Files.readString(Path.of(FILE_PATH));
         } catch (IOException e) {
