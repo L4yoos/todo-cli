@@ -31,23 +31,10 @@ public class TaskRepository {
                 .findFirst();
     }
 
-    // TODO optimality this method
     public Task save(Task task) {
-        int index = -1;
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getTaskId().equals(task.getTaskId())) {
-                index = i;
-                break;
-            }
-        }
-
-        if (index != -1) {
-            tasks.set(index, task);
-        } else {
-            tasks.add(task);
-        }
-
-        this.saveAll();
+        //it's still O(n) maybe change this to Map<UUID,Task>?
+        tasks.removeIf(existingTask -> existingTask.getTaskId().equals(task.getTaskId()));
+        tasks.add(task);
         return task;
     }
 
@@ -55,6 +42,9 @@ public class TaskRepository {
         Task task = this.findByLastFourChars(lastFourChars)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found with: " + lastFourChars));
         tasks.remove(task);
+    }
+
+    public void flush() {
         this.saveAll();
     }
 
@@ -109,7 +99,6 @@ public class TaskRepository {
             File f = new File(FILE_PATH);
             if (!f.exists() || f.length() == 0) {
                 return "[]";
-//                throw new FileNotFoundException("File is empty or didn't exists.");
             }
             return Files.readString(Path.of(FILE_PATH));
         } catch (IOException e) {
