@@ -58,4 +58,8 @@ public class TaskService {
     public void deleteTask(String lastFourChars) {
         taskRepository.delete(lastFourChars);
     }
+
+    public void flush() {
+        taskRepository.flush();
+    }
 }

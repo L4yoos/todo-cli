@@ -16,6 +16,9 @@ public class Main {
 
             TaskRepository taskRepository = new TaskRepository();
             TaskService taskService = new TaskService(taskRepository);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(taskService::flush));
+
             SwitchCLI cli = new SwitchCLI(scanner, taskService);
 
             while (option != 0) {
