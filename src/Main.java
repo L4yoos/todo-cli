@@ -1,5 +1,7 @@
 import cli.SwitchCLI;
+import repository.JsonTaskStorage;
 import repository.TaskRepository;
+import repository.TaskStrategy;
 import service.TaskService;
 
 import java.util.Scanner;
@@ -14,7 +16,9 @@ public class Main {
 
             int option = readOption(scanner);
 
-            TaskRepository taskRepository = new TaskRepository();
+            //TODO add Settings class
+            TaskStrategy strategy = new JsonTaskStorage();
+            TaskRepository taskRepository = new TaskRepository(strategy);
             TaskService taskService = new TaskService(taskRepository);
 
             Runtime.getRuntime().addShutdownHook(new Thread(taskService::flush));
