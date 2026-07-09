@@ -42,7 +42,7 @@ public class JsonTaskStorage implements TaskStrategy {
         Matcher matcher = Pattern.compile(regex, Pattern.DOTALL).matcher(content);
         while (matcher.find()) {
             tasks.add(
-                    Task.fromJsonParts(
+                    Task.fromParts(
                             UUID.fromString(matcher.group(1)),
                             matcher.group(2),
                             TaskType.valueOf(matcher.group(3)),
@@ -55,6 +55,7 @@ public class JsonTaskStorage implements TaskStrategy {
         return tasks;
     }
 
+    //TODO refactor this method to (java.nio NEW API)
     private String readContent() {
         try {
             File f = new File(FILE_PATH);

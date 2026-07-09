@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class TaskRepository {
     private TaskStrategy currentStorage;
-    private List<Task> tasks;
+    private final List<Task> tasks;
 
     public TaskRepository(TaskStrategy currentStorage) {
         this.currentStorage = currentStorage;

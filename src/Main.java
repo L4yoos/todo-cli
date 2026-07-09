@@ -1,4 +1,5 @@
 import cli.SwitchCLI;
+import repository.CsvTaskStorage;
 import repository.JsonTaskStorage;
 import repository.TaskRepository;
 import repository.TaskStrategy;
@@ -17,7 +18,7 @@ public class Main {
             int option = readOption(scanner);
 
             //TODO add Settings class
-            TaskStrategy strategy = new JsonTaskStorage();
+            TaskStrategy strategy = new CsvTaskStorage();
             TaskRepository taskRepository = new TaskRepository(strategy);
             TaskService taskService = new TaskService(taskRepository);
 
