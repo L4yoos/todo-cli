@@ -3,13 +3,12 @@ package repository;
 import exception.TaskNotFoundException;
 import model.Task;
 
-import java.io.*;
 import java.util.List;
 import java.util.Optional;
 
 public class TaskRepository {
     private TaskStrategy currentStorage;
-    private final List<Task> tasks;
+    private List<Task> tasks;
 
     public TaskRepository(TaskStrategy currentStorage) {
         this.currentStorage = currentStorage;
@@ -41,5 +40,11 @@ public class TaskRepository {
 
     public void flush() {
         this.currentStorage.save(tasks);
+    }
+
+    public void changeStrategy(TaskStrategy newStrategy) {
+        this.currentStorage = newStrategy;
+        //TODO copy tasks from CSV to JSON and alternately
+        this.tasks = currentStorage.load();
     }
 }

@@ -1,7 +1,10 @@
 package cli;
 
 import exception.TaskNotFoundException;
+import exception.WrongFileTypeException;
 import exception.WrongTaskTypeException;
+import model.FileType;
+import model.Settings;
 import model.Task;
 import service.TaskService;
 
@@ -12,10 +15,12 @@ public class SwitchCLI {
 
     private final Scanner scanner;
     private final TaskService taskService;
+    private final Settings settings;
 
-    public SwitchCLI(Scanner scanner, TaskService taskService) {
+    public SwitchCLI(Scanner scanner, TaskService taskService, Settings settings) {
         this.scanner = scanner;
         this.taskService = taskService;
+        this.settings = settings;
     }
 
     public void getOption(int option) {
@@ -26,14 +31,12 @@ public class SwitchCLI {
                 case 3 -> checkTask();
                 case 4 -> updateTask();
                 case 5 -> deleteTask();
-                //todo add CSV or JSON format file
-                case 6 -> System.out.println("Settings: ");
+                case 6 -> updateSettings();
                 default -> System.out.println("You need to type from 0 to 6. Type 0 to quit.");
             }
-        } catch (WrongTaskTypeException | TaskNotFoundException | IllegalStateException e) {
+        } catch (WrongFileTypeException | WrongTaskTypeException | TaskNotFoundException | IllegalStateException e) {
             System.out.println("Error: " + e.getMessage());
         }
-
     }
 
     public static int readOption(Scanner scanner) {
@@ -106,5 +109,26 @@ public class SwitchCLI {
     private void deleteTask() {
         System.out.println("Delete your Task: ");
         taskService.deleteTask(getLastFourChars());
+    }
+
+    private void updateSettings() {
+        System.out.println("Settings: ");
+        System.out.println("Your type of file: " + settings.getFileType().name());
+
+        System.out.println("1. Update type of File");
+        System.out.println("0. Quit");
+        int optionUpdate = readOption(scanner);
+        if (optionUpdate == 1) {
+            System.out.print("Type type of file [JSON, CSV]: ");
+
+            String newType = scanner.nextLine();
+            FileType fileType = FileType.fromString(newType.toUpperCase())
+                    .orElseThrow(() -> new WrongFileTypeException("Wrong FileType."));
+
+            settings.setFileType(fileType);
+            taskService.changeStrategy(fileType);
+
+            System.out.println("Settings Updated!");
+        }
     }
 }
