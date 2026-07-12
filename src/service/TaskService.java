@@ -2,9 +2,12 @@ package service;
 
 import exception.TaskNotFoundException;
 import exception.WrongTaskTypeException;
+import model.FileType;
 import model.Task;
 import model.TaskStatus;
 import model.TaskType;
+import repository.CsvTaskStorage;
+import repository.JsonTaskStorage;
 import repository.TaskRepository;
 
 import java.util.List;
@@ -61,5 +64,10 @@ public class TaskService {
 
     public void flush() {
         taskRepository.flush();
+    }
+
+    public void changeStrategy(FileType fileType) {
+        if (fileType == FileType.JSON) taskRepository.changeStrategy(new JsonTaskStorage());
+        taskRepository.changeStrategy(new CsvTaskStorage());
     }
 }

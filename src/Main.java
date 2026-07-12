@@ -1,5 +1,10 @@
 import cli.SwitchCLI;
+import model.FileType;
+import model.Settings;
+import repository.CsvTaskStorage;
+import repository.JsonTaskStorage;
 import repository.TaskRepository;
+import repository.TaskStrategy;
 import service.TaskService;
 
 import java.util.Scanner;
@@ -14,12 +19,21 @@ public class Main {
 
             int option = readOption(scanner);
 
-            TaskRepository taskRepository = new TaskRepository();
+            //TODO maybe lets make public static Settings.init?
+            Settings settings = new Settings();
+            TaskStrategy strategy;
+            if (settings.getFileType() == FileType.CSV) {
+                strategy = new CsvTaskStorage();
+            } else {
+                strategy = new JsonTaskStorage();
+            }
+
+            TaskRepository taskRepository = new TaskRepository(strategy);
             TaskService taskService = new TaskService(taskRepository);
 
             Runtime.getRuntime().addShutdownHook(new Thread(taskService::flush));
 
-            SwitchCLI cli = new SwitchCLI(scanner, taskService);
+            SwitchCLI cli = new SwitchCLI(scanner, taskService, settings);
 
             while (option != 0) {
                 cli.getOption(option);
