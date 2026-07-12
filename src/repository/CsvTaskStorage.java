@@ -4,9 +4,10 @@ import model.Task;
 import model.TaskStatus;
 import model.TaskType;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,10 +59,9 @@ public class CsvTaskStorage implements TaskStrategy {
         saveContent(sb.toString());
     }
 
-    // change fw to files.lines() or bufferedWriter
     private void saveContent(String content) {
-        try (FileWriter fw = new FileWriter(FILE_PATH)) {
-            fw.write(content);
+        try {
+            Files.write(Path.of(FILE_PATH), content.getBytes(), StandardOpenOption.CREATE);
         } catch (IOException e) {
             throw new RuntimeException("Unexpected Error.", e);
         }

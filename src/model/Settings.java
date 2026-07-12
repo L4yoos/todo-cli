@@ -1,9 +1,9 @@
 package model;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 public class Settings {
     private final static String FILE_PATH = "settings.txt";
@@ -40,8 +40,8 @@ public class Settings {
     }
 
     private void saveContent(String content) {
-        try (FileWriter fw = new FileWriter(FILE_PATH)) {
-            fw.write(content);
+        try {
+            Files.write(Path.of(FILE_PATH), content.getBytes(), StandardOpenOption.CREATE);
         } catch (IOException e) {
             throw new RuntimeException("Unexpected Error.", e);
         }

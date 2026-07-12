@@ -4,11 +4,10 @@ import model.Task;
 import model.TaskStatus;
 import model.TaskType;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,14 +54,13 @@ public class JsonTaskStorage implements TaskStrategy {
         return tasks;
     }
 
-    //TODO refactor this method to (java.nio NEW API)
     private String readContent() {
         try {
-            File f = new File(FILE_PATH);
-            if (!f.exists() || f.length() == 0) {
+            Path path = Path.of(FILE_PATH);
+            if (!Files.exists(path)) {
                 return "[]";
             }
-            return Files.readString(Path.of(FILE_PATH));
+            return Files.readString(path);
         } catch (IOException e) {
             throw new RuntimeException("Unexpected Error.", e);
         }
@@ -80,10 +78,9 @@ public class JsonTaskStorage implements TaskStrategy {
         saveContent(sb.toString());
     }
 
-    // change fw to files.lines() or bufferedWriter
     private void saveContent(String content) {
-        try (FileWriter fw = new FileWriter(FILE_PATH)) {
-            fw.write(content);
+        try {
+            Files.write(Path.of(FILE_PATH), content.getBytes(), StandardOpenOption.CREATE);
         } catch (IOException e) {
             throw new RuntimeException("Unexpected Error.", e);
         }

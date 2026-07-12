@@ -3,6 +3,7 @@ package repository;
 import exception.TaskNotFoundException;
 import model.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +13,7 @@ public class TaskRepository {
 
     public TaskRepository(TaskStrategy currentStorage) {
         this.currentStorage = currentStorage;
-        this.tasks = currentStorage.load();
+        this.tasks = new ArrayList<>(currentStorage.load());
     }
 
     public List<Task> getTasks() {
@@ -27,7 +28,7 @@ public class TaskRepository {
 
     public Task save(Task task) {
         //it's still O(n) maybe change this to Map<UUID,Task>?
-        tasks.removeIf(existingTask -> existingTask.getTaskId().equals(task.getTaskId()));
+        tasks.removeIf(existingTask -> existingTask.equals(task));
         tasks.add(task);
         return task;
     }
@@ -43,8 +44,16 @@ public class TaskRepository {
     }
 
     public void changeStrategy(TaskStrategy newStrategy) {
+        List<Task> tasksToMove = new ArrayList<>(this.tasks);
+        this.flush();
+
         this.currentStorage = newStrategy;
-        //TODO copy tasks from CSV to JSON and alternately
-        this.tasks = currentStorage.load();
+
+        this.tasks = new ArrayList<>(this.currentStorage.load());
+        for (Task task : tasksToMove) {
+            if (!this.tasks.contains(task)) {
+                this.tasks.add(task);
+            }
+        }
     }
 }
