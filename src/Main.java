@@ -1,5 +1,4 @@
 import cli.SwitchCLI;
-import model.FileType;
 import model.Settings;
 import repository.CsvTaskStorage;
 import repository.JsonTaskStorage;
@@ -19,14 +18,8 @@ public class Main {
 
             int option = readOption(scanner);
 
-            //TODO maybe lets make public static Settings.init?
-            Settings settings = new Settings();
-            TaskStrategy strategy;
-            if (settings.getFileType() == FileType.CSV) {
-                strategy = new CsvTaskStorage();
-            } else {
-                strategy = new JsonTaskStorage();
-            }
+            Settings settings = Settings.init();
+            TaskStrategy strategy = getStrategy(settings);
 
             TaskRepository taskRepository = new TaskRepository(strategy);
             TaskService taskService = new TaskService(taskRepository);
@@ -52,5 +45,13 @@ public class Main {
         System.out.println("5. Delete task");
         System.out.println("6. Settings");
         System.out.println("0. Quit");
+    }
+
+    private static TaskStrategy getStrategy(Settings settings) {
+        return switch (settings.getFileType()) {
+            case CSV -> new CsvTaskStorage();
+            case JSON -> new JsonTaskStorage();
+            default -> new JsonTaskStorage();
+        };
     }
 }

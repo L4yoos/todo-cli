@@ -7,7 +7,6 @@ import model.TaskType;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +79,7 @@ public class JsonTaskStorage implements TaskStrategy {
 
     private void saveContent(String content) {
         try {
-            Files.write(Path.of(FILE_PATH), content.getBytes(), StandardOpenOption.CREATE);
+            Files.write(Path.of(FILE_PATH), content.getBytes());
         } catch (IOException e) {
             throw new RuntimeException("Unexpected Error.", e);
         }

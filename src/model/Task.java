@@ -44,9 +44,11 @@ public class Task {
         Objects.requireNonNull(name, "Name is required.");
         name = name.trim();
         if (name.length() < 2) {
+            //TODO add dedicated exception
             throw new IllegalArgumentException("Name is too short.");
         }
         if (name.length() > 100) {
+            //TODO add dedicated exception
             throw new IllegalArgumentException("Name is too long.");
         }
         return name;
