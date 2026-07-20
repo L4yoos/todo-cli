@@ -67,7 +67,10 @@ public class TaskService {
     }
 
     public void changeStrategy(FileType fileType) {
-        if (fileType == FileType.JSON) taskRepository.changeStrategy(new JsonTaskStorage());
-        taskRepository.changeStrategy(new CsvTaskStorage());
+        if (fileType == FileType.JSON) {
+            taskRepository.changeStrategy(new JsonTaskStorage());
+        } else {
+            taskRepository.changeStrategy(new CsvTaskStorage());
+        }
     }
 }

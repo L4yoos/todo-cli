@@ -9,8 +9,12 @@ public class Settings {
     private final static String FILE_PATH = "settings.txt";
     private FileType fileType;
 
-    public Settings() {
+    Settings() {
         this.fileType = this.loadType();
+    }
+
+    public static Settings init() {
+        return new Settings();
     }
 
     public FileType getFileType() {
