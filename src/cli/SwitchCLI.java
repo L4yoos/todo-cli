@@ -114,6 +114,9 @@ public class SwitchCLI {
         System.out.println("Your type of file: " + settings.getFileType().name());
 
         System.out.println("1. Update type of File");
+        if (settings.getFileType().name().equalsIgnoreCase("CSV")) {
+            System.out.println("2. Update Separator");
+        }
         System.out.println("0. Quit");
         int optionUpdate = readOption(scanner);
         if (optionUpdate == 1) {
@@ -124,9 +127,18 @@ public class SwitchCLI {
                     .orElseThrow(() -> new WrongFileTypeException("Wrong FileType."));
 
             settings.setFileType(fileType);
-            taskService.changeStrategy(fileType);
-
-            System.out.println("Settings Updated!");
+            taskService.changeStrategy(fileType, settings.getSeparator());
         }
+
+        if (settings.getFileType().name().equalsIgnoreCase("CSV")) {
+            if (optionUpdate == 2) {
+                System.out.print("Type any separator e.g. [, ;]: ");
+
+                String newSeparator = scanner.nextLine();
+                settings.setSeparator(newSeparator);
+                taskService.changeStrategy(settings.getFileType(), newSeparator);
+            }
+        }
+        System.out.println("Settings Updated!");
     }
 }

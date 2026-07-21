@@ -49,7 +49,7 @@ public class Main {
 
     private static TaskStrategy getStrategy(Settings settings) {
         return switch (settings.getFileType()) {
-            case CSV -> new CsvTaskStorage();
+            case CSV -> new CsvTaskStorage(settings.getSeparator());
             case JSON -> new JsonTaskStorage();
             default -> new JsonTaskStorage();
         };

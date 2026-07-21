@@ -66,11 +66,11 @@ public class TaskService {
         taskRepository.flush();
     }
 
-    public void changeStrategy(FileType fileType) {
+    public void changeStrategy(FileType fileType, String separator) {
         if (fileType == FileType.JSON) {
             taskRepository.changeStrategy(new JsonTaskStorage());
         } else {
-            taskRepository.changeStrategy(new CsvTaskStorage());
+            taskRepository.changeStrategy(new CsvTaskStorage(separator));
         }
     }
 }
