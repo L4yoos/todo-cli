@@ -85,10 +85,6 @@ public class Task {
                 "}";
     }
 
-    public String toCsv() {
-        return String.format("%s,%s,%s,%s,%s,%s", taskId, name, type.name(), status.name(), createdAt.toString(), updatedAt.toString());
-    }
-
     public static Task fromParts(
             UUID taskId, String name, TaskType type,
             TaskStatus status, LocalDateTime createdAt, LocalDateTime updatedAt

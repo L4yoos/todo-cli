@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,14 +42,14 @@ public class CsvTaskStorage implements TaskStrategy {
 
         try (Stream<String> lines = Files.lines(path)) {
             return lines.skip(1)
-                    .map(line -> line.split(FILE_SEPARATOR))
+                    .map(line -> line.split(Pattern.quote(FILE_SEPARATOR)))
                     .map(parts -> Task.fromParts(
                             UUID.fromString(parts[0]),
                             parts[1],
                             TaskType.valueOf(parts[2]),
                             TaskStatus.valueOf(parts[3]),
                             LocalDateTime.parse(parts[4]),
-                        LocalDateTime.parse(parts[5])
+                            LocalDateTime.parse(parts[5])
                     )).collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException("Unexpected error.", e);

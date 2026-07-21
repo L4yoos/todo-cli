@@ -112,6 +112,7 @@ public class SwitchCLI {
     private void updateSettings() {
         System.out.println("Settings: ");
         System.out.println("Your type of file: " + settings.getFileType().name());
+        System.out.println("Your separator of file: " + settings.getSeparator());
 
         System.out.println("1. Update type of File");
         if (settings.getFileType().name().equalsIgnoreCase("CSV")) {
@@ -135,6 +136,11 @@ public class SwitchCLI {
                 System.out.print("Type any separator e.g. [, ;]: ");
 
                 String newSeparator = scanner.nextLine();
+                if (newSeparator.equals(".")) {
+                    System.out.println("Type another one separator.");
+                    return;
+                }
+
                 settings.setSeparator(newSeparator);
                 taskService.changeStrategy(settings.getFileType(), newSeparator);
             }
