@@ -1,8 +1,6 @@
 package cli;
 
-import exception.TaskNotFoundException;
-import exception.WrongFileTypeException;
-import exception.WrongTaskTypeException;
+import exception.*;
 import model.FileType;
 import model.Settings;
 import model.Task;
@@ -34,7 +32,7 @@ public class SwitchCLI {
                 case 6 -> updateSettings();
                 default -> System.out.println("You need to type from 0 to 6. Type 0 to quit.");
             }
-        } catch (WrongFileTypeException | WrongTaskTypeException | TaskNotFoundException | IllegalStateException e) {
+        } catch (InvalidNameException | WrongFileTypeException | WrongTaskTypeException | TaskNotFoundException | IllegalStateException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
