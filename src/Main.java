@@ -51,7 +51,6 @@ public class Main {
         return switch (settings.getFileType()) {
             case CSV -> new CsvTaskStorage(settings.getSeparator());
             case JSON -> new JsonTaskStorage();
-            default -> new JsonTaskStorage();
         };
     }
 }

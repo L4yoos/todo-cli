@@ -43,7 +43,7 @@ public class Settings {
     private String[] loadFile() {
         if (!Files.exists(PATH)) {
             saveContent("JSON\n,");
-            return new String[]{"Json", ","};
+            return new String[]{"JSON", ","};
         }
         try {
             String file = Files.readString(PATH);

@@ -115,36 +115,38 @@ public class SwitchCLI {
         System.out.println("Your separator of file: " + settings.getSeparator());
 
         System.out.println("1. Update type of File");
-        if (settings.getFileType().name().equalsIgnoreCase("CSV")) {
-            System.out.println("2. Update Separator");
-        }
+        System.out.println("2. Update Separator");
         System.out.println("0. Quit");
         int optionUpdate = readOption(scanner);
-        if (optionUpdate == 1) {
-            System.out.print("Type type of file [JSON, CSV]: ");
+        switch (optionUpdate) {
+            case 1 -> {
+                System.out.print("Type type of file [JSON, CSV]: ");
 
-            String newType = scanner.nextLine();
-            FileType fileType = FileType.fromString(newType.toUpperCase())
-                    .orElseThrow(() -> new WrongFileTypeException("Wrong FileType."));
+                String newType = scanner.nextLine();
+                FileType fileType = FileType.fromString(newType.toUpperCase())
+                        .orElseThrow(() -> new WrongFileTypeException("Wrong FileType."));
 
-            settings.setFileType(fileType);
-            taskService.changeStrategy(fileType, settings.getSeparator());
-        }
+                settings.setFileType(fileType);
+                taskService.changeStrategy(fileType, settings.getSeparator());
+            }
+            case 2 -> {
+                if (settings.getFileType().name().equalsIgnoreCase("CSV")) {
+                    System.out.print("Type any separator e.g. [, ;]: ");
 
-        if (settings.getFileType().name().equalsIgnoreCase("CSV")) {
-            if (optionUpdate == 2) {
-                System.out.print("Type any separator e.g. [, ;]: ");
+                    String newSeparator = scanner.nextLine();
+                    if (newSeparator.equals(".")) {
+                        System.out.println("Type another one separator.");
+                        return;
+                    }
 
-                String newSeparator = scanner.nextLine();
-                if (newSeparator.equals(".")) {
-                    System.out.println("Type another one separator.");
-                    return;
+                    settings.setSeparator(newSeparator);
+                    taskService.changeStrategy(settings.getFileType(), newSeparator);
+                } else {
+                    System.out.println("Unavailable.");
                 }
-
-                settings.setSeparator(newSeparator);
-                taskService.changeStrategy(settings.getFileType(), newSeparator);
             }
         }
+
         System.out.println("Settings Updated!");
     }
 }

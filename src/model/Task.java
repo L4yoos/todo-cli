@@ -74,6 +74,7 @@ public class Task {
         this.updatedAt = LocalDateTime.now();
     }
 
+    //TODO move this to JsonTaskStorage for clean architecture
     public String toJson() {
         return "{\n" +
                     " \"taskId\": \"" + taskId + "\",\n" +
