@@ -1,5 +1,7 @@
 package model;
 
+import exception.InvalidNameException;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -44,12 +46,10 @@ public class Task {
         Objects.requireNonNull(name, "Name is required.");
         name = name.trim();
         if (name.length() < 2) {
-            //TODO add dedicated exception
-            throw new IllegalArgumentException("Name is too short.");
+            throw new InvalidNameException("Name is too short.");
         }
         if (name.length() > 100) {
-            //TODO add dedicated exception
-            throw new IllegalArgumentException("Name is too long.");
+            throw new InvalidNameException("Name is too long.");
         }
         return name;
     }
@@ -74,6 +74,7 @@ public class Task {
         this.updatedAt = LocalDateTime.now();
     }
 
+    //TODO move this to JsonTaskStorage for clean architecture
     public String toJson() {
         return "{\n" +
                     " \"taskId\": \"" + taskId + "\",\n" +
@@ -83,10 +84,6 @@ public class Task {
                     " \"createdAt\": \"" + createdAt.toString() + "\",\n" +
                     " \"updatedAt\": \"" + updatedAt.toString() + "\"\n" +
                 "}";
-    }
-
-    public String toCsv() {
-        return String.format("%s,%s,%s,%s,%s,%s", taskId, name, type.name(), status.name(), createdAt.toString(), updatedAt.toString());
     }
 
     public static Task fromParts(

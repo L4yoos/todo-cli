@@ -11,13 +11,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CsvTaskStorage implements TaskStrategy {
     private static final String FILE_PATH = "tasks.csv";
-    //TODO add dynamic seperator for CSV.
+    private final String FILE_SEPARATOR;
     //TODO add validate header for CSV.
+
+    public CsvTaskStorage(String separator) {
+        this.FILE_SEPARATOR = separator;
+    }
 
     @Override
     public List<Task> load() {
@@ -37,14 +42,14 @@ public class CsvTaskStorage implements TaskStrategy {
 
         try (Stream<String> lines = Files.lines(path)) {
             return lines.skip(1)
-                    .map(line -> line.split(","))
+                    .map(line -> line.split(Pattern.quote(FILE_SEPARATOR)))
                     .map(parts -> Task.fromParts(
                             UUID.fromString(parts[0]),
                             parts[1],
                             TaskType.valueOf(parts[2]),
                             TaskStatus.valueOf(parts[3]),
                             LocalDateTime.parse(parts[4]),
-                        LocalDateTime.parse(parts[5])
+                            LocalDateTime.parse(parts[5])
                     )).collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException("Unexpected error.", e);
@@ -52,12 +57,23 @@ public class CsvTaskStorage implements TaskStrategy {
     }
 
     private void saveAll(List<Task> tasks) {
-        StringBuilder sb = new StringBuilder("taskId,name,type,status,createdAt,updatedAt\n");
+        StringBuilder sb = new StringBuilder(String.join(FILE_SEPARATOR, "taskId", "name", "type", "status", "createdAt", "updatedAt") + "\n");
         for (Task task : tasks) {
-            sb.append(task.toCsv());
+            sb.append(toCsv(task));
             sb.append("\n");
         }
         saveContent(sb.toString());
+    }
+
+    private String toCsv(Task task) {
+        return String.join(FILE_SEPARATOR,
+                task.getTaskId().toString(),
+                task.getName(),
+                task.getType().name(),
+                task.getStatus().name(),
+                task.getCreatedAt().toString(),
+                task.getUpdatedAt().toString()
+        );
     }
 
     private void saveContent(String content) {

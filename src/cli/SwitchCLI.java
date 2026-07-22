@@ -1,8 +1,6 @@
 package cli;
 
-import exception.TaskNotFoundException;
-import exception.WrongFileTypeException;
-import exception.WrongTaskTypeException;
+import exception.*;
 import model.FileType;
 import model.Settings;
 import model.Task;
@@ -34,7 +32,7 @@ public class SwitchCLI {
                 case 6 -> updateSettings();
                 default -> System.out.println("You need to type from 0 to 6. Type 0 to quit.");
             }
-        } catch (WrongFileTypeException | WrongTaskTypeException | TaskNotFoundException | IllegalStateException e) {
+        } catch (InvalidNameException | WrongFileTypeException | WrongTaskTypeException | TaskNotFoundException | IllegalStateException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
@@ -114,21 +112,41 @@ public class SwitchCLI {
     private void updateSettings() {
         System.out.println("Settings: ");
         System.out.println("Your type of file: " + settings.getFileType().name());
+        System.out.println("Your separator of file: " + settings.getSeparator());
 
         System.out.println("1. Update type of File");
+        System.out.println("2. Update Separator");
         System.out.println("0. Quit");
         int optionUpdate = readOption(scanner);
-        if (optionUpdate == 1) {
-            System.out.print("Type type of file [JSON, CSV]: ");
+        switch (optionUpdate) {
+            case 1 -> {
+                System.out.print("Type type of file [JSON, CSV]: ");
 
-            String newType = scanner.nextLine();
-            FileType fileType = FileType.fromString(newType.toUpperCase())
-                    .orElseThrow(() -> new WrongFileTypeException("Wrong FileType."));
+                String newType = scanner.nextLine();
+                FileType fileType = FileType.fromString(newType.toUpperCase())
+                        .orElseThrow(() -> new WrongFileTypeException("Wrong FileType."));
 
-            settings.setFileType(fileType);
-            taskService.changeStrategy(fileType);
+                settings.setFileType(fileType);
+                taskService.changeStrategy(fileType, settings.getSeparator());
+            }
+            case 2 -> {
+                if (settings.getFileType().name().equalsIgnoreCase("CSV")) {
+                    System.out.print("Type any separator e.g. [, ;]: ");
 
-            System.out.println("Settings Updated!");
+                    String newSeparator = scanner.nextLine();
+                    if (newSeparator.equals(".")) {
+                        System.out.println("Type another one separator.");
+                        return;
+                    }
+
+                    settings.setSeparator(newSeparator);
+                    taskService.changeStrategy(settings.getFileType(), newSeparator);
+                } else {
+                    System.out.println("Unavailable.");
+                }
+            }
         }
+
+        System.out.println("Settings Updated!");
     }
 }
