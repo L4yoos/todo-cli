@@ -100,17 +100,12 @@ public class Task {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return  Objects.equals(taskId, task.taskId) &&
-                Objects.equals(name, task.name) &&
-                type == task.type &&
-                status == task.status &&
-                Objects.equals(createdAt, task.createdAt) &&
-                Objects.equals(updatedAt, task.updatedAt);
+        return  Objects.equals(taskId, task.taskId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(taskId, name, type, status, createdAt, updatedAt);
+        return Objects.hash(taskId);
     }
 
     @Override
