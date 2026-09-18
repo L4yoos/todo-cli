@@ -74,18 +74,6 @@ public class Task {
         this.updatedAt = LocalDateTime.now();
     }
 
-    //TODO move this to JsonTaskStorage for clean architecture
-    public String toJson() {
-        return "{\n" +
-                    " \"taskId\": \"" + taskId + "\",\n" +
-                    " \"name\": \"" + name.replace("\"", "\\\"") + "\",\n" +
-                    " \"type\": \"" + type.name() + "\",\n" +
-                    " \"status\": \"" + status.name() + "\",\n" +
-                    " \"createdAt\": \"" + createdAt.toString() + "\",\n" +
-                    " \"updatedAt\": \"" + updatedAt.toString() + "\"\n" +
-                "}";
-    }
-
     public static Task fromParts(
             UUID taskId, String name, TaskType type,
             TaskStatus status, LocalDateTime createdAt, LocalDateTime updatedAt

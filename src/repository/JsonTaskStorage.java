@@ -68,7 +68,7 @@ public class JsonTaskStorage implements TaskStrategy {
     private void saveAll(List<Task> tasks) {
         StringBuilder sb = new StringBuilder("[\n");
         for (int i = 0; i < tasks.size(); i ++) {
-            sb.append(tasks.get(i).toJson());
+            sb.append(toJson(tasks.get(i)));
             if (i < tasks.size() - 1) {
                 sb.append(",\n");
             }
@@ -83,5 +83,16 @@ public class JsonTaskStorage implements TaskStrategy {
         } catch (IOException e) {
             throw new RuntimeException("Unexpected Error.", e);
         }
+    }
+
+    private String toJson(Task task) {
+        return "{\n" +
+                " \"taskId\": \"" + task.getTaskId() + "\",\n" +
+                " \"name\": \"" + task.getName().replace("\"", "\\\"") + "\",\n" +
+                " \"type\": \"" + task.getType().name() + "\",\n" +
+                " \"status\": \"" + task.getStatus().name() + "\",\n" +
+                " \"createdAt\": \"" + task.getCreatedAt().toString() + "\",\n" +
+                " \"updatedAt\": \"" + task.getUpdatedAt().toString() + "\"\n" +
+                "}";
     }
 }
